@@ -1,0 +1,10 @@
+/.redo
+/obj/
+/*.gb
+/*.sym
+/*.map
+/*.dbg
+/*.tbl
+/*.sn*
+/*.sav
+/*.srm

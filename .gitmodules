@@ -1,0 +1,6 @@
+[submodule "src/gb-vwf"]
+	path = src/gb-vwf
+	url = git@github.com:ISSOtm/gb-vwf.git
+[submodule "src/hardware.inc"]
+	path = src/hardware.inc
+	url = git@github.com:gbdev/hardware.inc.git
