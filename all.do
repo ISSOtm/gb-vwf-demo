@@ -21,4 +21,4 @@ done
 
 rgbasm -DPRINT_TBL -DVWF_CFG_FILE=vwf_config.inc -I src src/gb-vwf/vwf.asm >vwf.tbl
 
-rgblink "${LDFLAGS[@]}" "${OBJS[@]}" -o - -m vwf.map -n vwf.sym | rgbfix "${FIXFLAGS[@]}" >vwf.gb
+rgblink "${LDFLAGS[@]}" "${OBJS[@]}" -o - -m vwf.map -n vwf.sym | rgbfix "${FIXFLAGS[@]}" - >vwf.gb

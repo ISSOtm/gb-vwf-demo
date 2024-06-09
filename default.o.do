@@ -14,7 +14,7 @@ SRC="src/${2#obj/}"
 if ! [[ -e "$SRC" ]]; then
 	SRC="obj/${SRC#src/}"
 fi
-redo-ifchange $SRC
+redo-ifchange "$SRC"
 
 mkdir -p "${2%/*}" # Create the output directory.
 
