@@ -400,16 +400,11 @@ ClearTextbox::
 	ret
 
 
-SECTION "Called text", ROMX[$5000],BANK[2]
-
-CalledText:
-	db "Toto, I don't think we're in Bank ", BANK(Text) + "0", " anymore.<END>"
-
-; For demonstration purposes, both of these pieces of text are in different banks,
-; and both in a bank other than the VWF engine
+; For demonstration purposes, all of these pieces of text are in different banks,
+; and in a bank other than the VWF engine.
 SECTION "Text", ROMX,BANK[3]
 
-Text: ; TODO: use constants for the fonts
+Text:
 	; TODO: showcase multi-line strings as well
 	db "<CLEAR>Hello World!\n"
 	db "This line should break here, automatically!\n<WAIT>"
@@ -417,8 +412,8 @@ Text: ; TODO: use constants for the fonts
 	db "Text resumes printing when pressing A, but holding B works too.<WAIT>"
 
 	db "<CLEAR>Let's tour through most of the functionality, shall we?\n<WAIT>"
-	db "The engine is also aware of textbox height, and will replace newlines (both manual ones, and those inserted automatically) with commands to scroll the textbox.\n<WAIT>"
-	db "It also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!\n"
+	db "The engine is also aware of textbox height, and will replace newlines (both manual ones, and those inserted automatically) with commands to scroll the textbox.\n\n<WAIT>"
+	db "It also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!\n\n"
 	db "You can witness that in action right now, given how long this paragraph is.<WAIT>"
 
 	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.\n<WAIT>"
@@ -433,10 +428,18 @@ Text: ; TODO: use constants for the fonts
 	db "You can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!\n<WAIT>"
 	db "Each font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
 
-;	db "<CLEAR>The engine also supports a `call`-like mechanism. The following string is pulled from ROM2:{X:CalledText}: \""
+PUSHS
+; Note that cross-bank "call" is NOT supported!
+; It is, after all, primarily intended for things like the player's name (which you'd store in RAM).
+SECTION "Called text", ROMX[$5000],BANK[3]
+CalledText:
+	db "Toto, I don't think we're in the main block anymore.<END>"
+POPS
+
+	db "<CLEAR>The engine also supports a `call`-like mechanism. The following string is pulled from ${X:CalledText}: \""
 	; Control chars are also made available as `TEXT_*` symbols if `EXPORT_CONTROL_CHARS` is passed to the engine
-;	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
-;	db "\".\n<WAIT>"
+	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
+	db "\".\n<WAIT>"
 	db "A \"jump\" is also supported.<WAIT>"
 	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
 
