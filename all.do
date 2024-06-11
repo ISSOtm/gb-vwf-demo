@@ -4,6 +4,10 @@ set -euo pipefail
 LDFLAGS=(-d)
 FIXFLAGS=(-v -p 0xFF -m MBC3)
 
+rgbasm=${RGBASM:-${RGBDS:+$RGBDS/}rgbasm}
+rgblink=${RGBLINK:-${RGBDS:+$RGBDS/}rgblink}
+rgbfix=${RGBFIX:-${RGBDS:+$RGBDS/}rgbfix}
+
 readarray -d '' SRCS < <(find src -name '*.asm' -type f -print0 | tee >(redo-stamp))
 OBJS=()
 for src in "${SRCS[@]}"; do
@@ -19,6 +23,6 @@ done
 	done
 } >vwf.dbg
 
-rgbasm -DPRINT_TBL -DVWF_CFG_FILE=vwf_config.inc -I src src/gb-vwf/vwf.asm >vwf.tbl
+"$rgbasm" -DPRINT_TBL -DVWF_CFG_FILE=vwf_config.inc -I src src/gb-vwf/vwf.asm >vwf.tbl
 
-rgblink "${LDFLAGS[@]}" "${OBJS[@]}" -o - -m vwf.map -n vwf.sym | rgbfix "${FIXFLAGS[@]}" - >vwf.gb
+"$rgblink" "${LDFLAGS[@]}" "${OBJS[@]}" -o - -m vwf.map -n vwf.sym | "$rgbfix" "${FIXFLAGS[@]}" - >vwf.gb

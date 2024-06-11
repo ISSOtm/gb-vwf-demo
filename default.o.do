@@ -5,6 +5,8 @@ INCPATHS=(src/)
 WARNINGS=(all  extra)
 ASFLAGS=(-p 0xFF  -h  "${INCPATHS[@]/#/-I}"  "${WARNINGS[@]/#/-W}")
 
+rgbasm=${RGBASM:-${RGBDS:+$RGBDS/}rgbasm}
+
 if [[ "$2" = "obj/gb-vwf/vwf.asm" ]]; then
 	ASFLAGS+=(-DVWF_CFG_FILE=src/vwf_config.inc)
 fi
@@ -25,9 +27,9 @@ rm -rf "$3"
 
 while ! [[ -e "$3" ]]; do
 	# Attempt to build and discover dependencies, passing each of them to `redo-ifchange` via `-M`.
-	rgbasm "${ASFLAGS[@]}" "$SRC" -o "$3" -M - -MG | cut -d : -f 2- | xargs redo-ifchange
+	"$rgbasm" "${ASFLAGS[@]}" "$SRC" -o "$3" -M - -MG | cut -d : -f 2- | xargs redo-ifchange
 	# We will keep retrying until all dependencies have been built, since then RGBASM will have generated the output file.
 done
 
 # Do it one last time to generate that file's associated debugfile.
-rgbasm -DPRINT_DEBUGFILE "${ASFLAGS[@]}" "$SRC" >"$2.dbg"
+"$rgbasm" -DPRINT_DEBUGFILE "${ASFLAGS[@]}" "$SRC" >"$2.dbg"
