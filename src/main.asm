@@ -433,14 +433,17 @@ PUSHS
 ; It is, after all, primarily intended for things like the player's name (which you'd store in RAM).
 SECTION "Called text", ROMX[$5000],BANK[3]
 CalledText:
-	db "Toto, I don't think we're in the main block anymore.<END>"
+	db "Toto, I don't think we're in the main block anymore...<END>"
 POPS
 
-	db "<CLEAR>The engine also supports a `call`-like mechanism. The following string is pulled from ${X:CalledText}: \""
-	; Control chars are also made available as `TEXT_*` symbols if `EXPORT_CONTROL_CHARS` is passed to the engine
+	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
+	; Control chars are also made available as exported `VWF_*` constants.
 	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
-	db "\".\n<WAIT>"
-	db "A \"jump\" is also supported.<WAIT>"
+	db "\".<WAIT>\n"
+	db "It is intended for things like the player's name.<WAIT>\n"
+	db "\n"
+	db "A \"jump\" is also supported.\n"
+	db "Though you may want to check out the source code--it's all seamless to the player.<WAIT>"
 	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
 
 SECTION "Credits text", ROMX,BANK[3]
