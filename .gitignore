@@ -1,5 +1,5 @@
-/.redo
 /obj/
+
 /*.gb
 /*.sym
 /*.map
@@ -8,3 +8,7 @@
 /*.sn*
 /*.sav
 /*.srm
+
+/.redo
+/.do_built*
+*.did
