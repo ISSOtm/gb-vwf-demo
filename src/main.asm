@@ -288,6 +288,7 @@ PerformAnimation:
 .noBeep
 
 	; Draw a button animation if waiting for button input
+	assert TEXTB_WAITING == 7
 	bit 7, [hl]
 	ld a, SCRN_Y + 16
 	jr z, .notWaiting
@@ -298,10 +299,9 @@ PerformAnimation:
 	bit PADB_A, a
 	jr z, .keepWaiting
 .stopWaiting
+	assert TEXTB_WAITING == 7
 	res 7, [hl]
 .keepWaiting
-	ld a, [wTextbox.height]
-	ld [wNbLinesRead], a
 	ld a, 110 + 16
 .notWaiting
 	ld [wButtonSprites], a
@@ -412,7 +412,8 @@ Text:
 	db "\n"
 	db "\nText resumes printing when pressing A, but holding B works too.<WAIT>"
 
-	db "<CLEAR>Let's tour through most of the functionality, shall we?\n<WAIT>"
+	db "<CLEAR>Let's tour through most of the functionality, shall we?<WAIT>"
+	db "\n"
 	db "\nThe engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically)."
 	db "\n"
 	db "\nIt also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!"
@@ -422,12 +423,15 @@ Text:
 	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
 	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
 
-	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
+	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line"
+	db "\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
 
-	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20,"It could be useful for RPG cutscenes or rhythm games?<WAIT>"
+	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20
+	db "\nIt could be useful for RPG cutscenes or rhythm games?<WAIT>"
 
 	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!<WAIT>"
 	db "\nYou can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!<WAIT>"
+	db "\n"
 	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
 
 PUSHS
