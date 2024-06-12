@@ -362,9 +362,11 @@ ClearTextbox::
 
 	ld a, [wTextbox.width]
 	ld [wLookahead.nbTilesRemaining], a
-	; Clear the textbox.
 	ld a, [wTextbox.height]
 	ld [wNbLinesRemaining], a ; Reset this, since we're resetting the "print head" as well.
+	ld [wNbLinesRead], a ; Same.
+
+	; Clear the textbox.
 	ld b, a
 .clearRow
 	ld a, [wTextbox.width]
@@ -405,7 +407,6 @@ ClearTextbox::
 SECTION "Text", ROMX,BANK[3]
 
 Text:
-	; TODO: showcase multi-line strings as well
 	db "<CLEAR>Hello World!\n"
 	db "This line should break here, automatically!\n<WAIT>"
 	db "\n"
