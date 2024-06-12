@@ -407,27 +407,28 @@ ClearTextbox::
 SECTION "Text", ROMX,BANK[3]
 
 Text:
-	db "<CLEAR>Hello World!\n"
-	db "This line should break here, automatically!\n<WAIT>"
+	db "<CLEAR>Hello World!"
+	db "\nThis line should break here, automatically!<WAIT>"
 	db "\n"
-	db "Text resumes printing when pressing A, but holding B works too.<WAIT>"
+	db "\nText resumes printing when pressing A, but holding B works too.<WAIT>"
 
 	db "<CLEAR>Let's tour through most of the functionality, shall we?\n<WAIT>"
-	db "The engine is also aware of textbox height, and will replace newlines (both manual ones, and those inserted automatically) with commands to scroll the textbox.\n\n<WAIT>"
-	db "It also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!\n\n"
-	db "You can witness that in action right now, given how long this paragraph is.<WAIT>"
+	db "\nThe engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically)."
+	db "\n"
+	db "\nIt also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!"
+	db "\nYou can witness that in action right now, given how long this paragraph is.<WAIT>"
 
-	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.\n<WAIT>"
+	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.<WAIT>"
 	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
-	db "Breaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
+	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
 
-	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line\nbreaks, and, as you probably already noticed, manual button waits.\n<WAIT>"
+	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
 
 	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20,"It could be useful for RPG cutscenes or rhythm games?<WAIT>"
 
-	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!\n<WAIT>"
-	db "You can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!\n<WAIT>"
-	db "Each font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
+	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!<WAIT>"
+	db "\nYou can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!<WAIT>"
+	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
 
 PUSHS
 ; Note that cross-bank "call" is NOT supported!
@@ -440,26 +441,26 @@ POPS
 	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
 	; Control chars are also made available as exported `VWF_*` constants.
 	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
-	db "\".<WAIT>\n"
-	db "It is intended for things like the player's name.<WAIT>\n"
+	db "\".<WAIT>"
+	db "\nIt is intended for things like the player's name.<WAIT>"
 	db "\n"
-	db "A \"jump\" is also supported.\n"
-	db "Though you may want to check out the source code--it's all seamless to the player.<WAIT>"
+	db "\nA \"jump\" is also supported."
+	db "\nThough you may want to check out the source code--it's all seamless to the player.<WAIT>"
 	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
 
 SECTION "Credits text", ROMX,BANK[3]
 
 CreditsText:
-	db "<CLEAR>♥ Credits ♥\n"
-	db "VWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.\n<WAIT>"
+	db "<CLEAR>♥ Credits ♥"
+	db "\nVWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.<WAIT>"
 	db "\n"
-	db "Text will now end, press START to begin again.<END>"
+	db "\nText will now end, press START to begin again.<END>"
 
 SECTION "Static text", ROMX,BANK[2]
 
 StaticText:
-	db "<SET_FONT>",0,"VWF engine 2.0.0\n"
-	db "github.com/ISSOtm/gb-vwf<END>"
+	db "<SET_FONT>",0,"VWF engine 2.0.0"
+	db "\ngithub.com/ISSOtm/gb-vwf<END>"
 
 
 SECTION "LCDMemcpy", ROM0
