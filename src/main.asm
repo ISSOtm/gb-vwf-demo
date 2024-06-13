@@ -17,182 +17,69 @@ macro lb
 endm
 
 
-SECTION "Header", ROM0[$100]
+; For demonstration purposes, all of these pieces of text are in different banks,
+; and in a bank other than the VWF engine.
+SECTION "Text", ROMX,BANK[3]
 
-	di
-	jr EntryPoint
+Text:
+	db "<CLEAR>Hello World!"
+	db "\nThis line should break here, automatically!<WAIT>"
+	db "\n"
+	db "\nText resumes printing when pressing A, but holding B works too.<WAIT>"
 
-	ds $150 - @, 0
+	db "<CLEAR>Let's tour through most of the functionality, shall we?<WAIT>"
+	db "\n"
+	db "\nThe engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically)."
+	db "\n"
+	db "\nIt also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!"
+	db "\nYou can witness that in action right now, given how long this paragraph is.<WAIT>"
 
-EntryPoint:
-	; Clear tilemap
-	ld hl, _SCRN0
-	ld de, SCRN_VX_B - SCRN_X_B
-	ld c, SCRN_Y_B
-.waitVBlank
-	ldh a, [rLY]
-	sub SCRN_Y
-	jr nz, .waitVBlank
-	; xor a ; ld a, 0
-.clearTilemap
-REPT SCRN_X_B
-	ld [hli], a
-ENDR
-	add hl, de
-	dec c
-	jr nz, .clearTilemap
-	; Init LCD regs
-	; xor a ; ld a, 0
-	ldh [rSCY], a
-	ldh [rSCX], a
-	ld a, %11100100
-	ldh [rBGP], a
-	ldh [rOBP0], a
-	ld a, LCDCF_ON | LCDCF_BGON
-	ldh [rLCDC], a
+	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.<WAIT>"
+	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
+	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
 
-	; Init interrupt handler vars
-	xor a
-	ldh [hVBlankFlag], a
-	dec a ; ld a, $FF
-	ldh [hHeldButtons], a
+	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line"
+	db "\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
 
-	ld hl, OAMDMA
-	lb bc, OAMDMA.end - OAMDMA, LOW(hOAMDMA)
-.copyOAMDMA
-	ld a, [hli]
-	ldh [c], a
-	inc c
-	dec b
-	jr nz, .copyOAMDMA
+	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20
+	db "\nIt could be useful for RPG cutscenes or rhythm games?<WAIT>"
 
-	; Init OAM
-	ld hl, wShadowOAM
-	ld de, .sprites
-	ld c, .spritesEnd - .sprites
-	rst MemcpySmall
-	; Send unused sprites off-screen
-	ld c, NB_UNUSED_SPRITES * sizeof_OAM_ATTRS
-	xor a ; ld a, 0
-	rst MemsetSmall
+	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!<WAIT>"
+	db "\nYou can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!<WAIT>"
+	db "\n"
+	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
 
+PUSHS
+; Note that cross-bank "call" is NOT supported!
+; It is, after all, primarily intended for things like the player's name (which you'd store in RAM).
+SECTION "Called text", ROMX[$5000],BANK[3]
+CalledText:
+	db "Toto, I don't think we're in the main block anymore...<END>"
+POPS
 
-	ld a, IEF_VBLANK
-	ldh [rIE], a
-	xor a
-	ei
-	ldh [rIF], a
+	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
+	; Control chars are also made available as exported `VWF_*` constants.
+	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
+	db "\".<WAIT>"
+	db "\nIt is intended for things like the player's name.<WAIT>"
+	db "\n"
+	db "\nA \"jump\" is also supported."
+	db "\nThough you may want to check out the source code--it's all seamless to the player.<WAIT>"
+	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
 
+SECTION "Credits text", ROMX,BANK[3]
 
-	assert .spritesEnd == .tiles
-	; ld de, .tiles
-	ld hl, vButtonTiles
-	ld bc, (.tilesEnd - .tiles) / 2
-	call LCDMemcpy
+CreditsText:
+	db "<CLEAR>♥ Credits ♥"
+	db "\nVWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.<WAIT>"
+	db "\n"
+	db "\nText will now end, press START to begin again.<END>"
 
-	ld hl, vTextboxTopRow
-	lb bc, LOW(vBorderTiles.top / 16), NB_BORDER_TOP_TILES
-	assert NB_BORDER_TOP_TILES == TEXT_WIDTH_TILES + 1
-.writeTopRow
-	ldh a, [rSTAT]
-	and STATF_BUSY
-	jr nz, .writeTopRow
-	ld a, b
-	ld [hli], a
-	inc b
-	dec c
-	jr nz, .writeTopRow
+SECTION "Static text", ROMX,BANK[2]
 
-	ld hl, vText - 1
-	ld c, TEXT_HEIGHT_TILES
-	assert NB_BORDER_VERT_TILES == TEXT_HEIGHT_TILES * 2
-.writeVertBorders
-	ldh a, [rSTAT]
-	and STATF_BUSY
-	jr nz, .writeVertBorders
-	ld a, b
-	ld [hli], a
-	inc b
-	ld a, l
-	add a, TEXT_WIDTH_TILES
-	ld l, a
-	ld a, b
-	ld [hli], a
-	inc b
-	ld a, l
-	add a, SCRN_VX_B - TEXT_WIDTH_TILES - 2
-	ld l, a
-	adc a, h
-	sub l
-	ld h, a
-	dec c
-	jr nz, .writeVertBorders
-
-	inc hl
-	ld c, TEXT_WIDTH_TILES + 1
-	assert NB_BORDER_BOTTOM_TILES == TEXT_WIDTH_TILES + 1
-.writeBottomRow
-	ldh a, [rSTAT]
-	and STATF_BUSY
-	jr nz, .writeBottomRow
-	ld a, b
-	ld [hli], a
-	inc b
-	dec c
-	jr nz, .writeBottomRow
-
-	; Assuming OAM has correctly been written, start displaying sprites
-	ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_OBJ16 | LCDCF_BGON
-	ldh [rLCDC], a
-
-
-	;;;;;;;;;;;;;;;; TEXT ENGINE GLOBAL INIT ;;;;;;;;;;;;;;;;;;;;
-
-	; You need to do the following at least once when the game starts.
-	xor a
-	ld [wNbPixelsDrawn], a
-
-
-	ld a, BANK(PerformAnimation)
-	ldh [hCurROMBank], a
-	ld [rROMB0], a
-	jp PerformAnimation
-
-
-.sprites
-	db 0, 142 + 8, LOW(vButtonTiles / 16) + 0, 0
-	db 0, 142 + 8, LOW(vButtonTiles / 16) + 2, 0
-	db 0, 150 + 8, LOW(vButtonTiles / 16) + 4, 0
-	db 0, 150 + 8, LOW(vButtonTiles / 16) + 6, 0
-.spritesEnd
-
-.tiles
-.buttonTiles
-INCBIN "res/button.2bpp"
-def NB_BUTTON_TILES equ (@ - .buttonTiles) / 16
-def NB_BUTTON_SPRITES equ NB_BUTTON_TILES / 2
-
-.borderTopTiles
-INCBIN "res/border_top.2bpp"
-def NB_BORDER_TOP_TILES equ (@ - .borderTopTiles) / 16
-.borderVertTiles
-INCBIN "res/border_vert.2bpp"
-def NB_BORDER_VERT_TILES equ (@ - .borderVertTiles) / 16
-.borderBottomTiles
-INCBIN "res/border_bottom.2bpp"
-def NB_BORDER_BOTTOM_TILES equ (@ - .borderBottomTiles) / 16
-
-.tilesEnd
-
-
-OAMDMA:
-	ldh [rDMA], a
-	ld a, OAM_COUNT
-.wait
-	dec a
-	jr nz, .wait
-	ret
-.end
+StaticText:
+	db "<SET_FONT>",0,"VWF engine 2.0.0"
+	db "\ngithub.com/ISSOtm/gb-vwf<END>"
 
 
 ; This is intentionally placed in bank 2 to demonstrate the VWF engine working fine from ROMX
@@ -403,69 +290,182 @@ ClearTextbox::
 	ret
 
 
-; For demonstration purposes, all of these pieces of text are in different banks,
-; and in a bank other than the VWF engine.
-SECTION "Text", ROMX,BANK[3]
+SECTION "Header", ROM0[$100]
 
-Text:
-	db "<CLEAR>Hello World!"
-	db "\nThis line should break here, automatically!<WAIT>"
-	db "\n"
-	db "\nText resumes printing when pressing A, but holding B works too.<WAIT>"
+	di
+	jr EntryPoint
 
-	db "<CLEAR>Let's tour through most of the functionality, shall we?<WAIT>"
-	db "\n"
-	db "\nThe engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically)."
-	db "\n"
-	db "\nIt also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!"
-	db "\nYou can witness that in action right now, given how long this paragraph is.<WAIT>"
+	ds $150 - @, 0
 
-	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.<WAIT>"
-	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
-	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
+EntryPoint:
+	; Clear tilemap
+	ld hl, _SCRN0
+	ld de, SCRN_VX_B - SCRN_X_B
+	ld c, SCRN_Y_B
+.waitVBlank
+	ldh a, [rLY]
+	sub SCRN_Y
+	jr nz, .waitVBlank
+	; xor a ; ld a, 0
+.clearTilemap
+REPT SCRN_X_B
+	ld [hli], a
+ENDR
+	add hl, de
+	dec c
+	jr nz, .clearTilemap
+	; Init LCD regs
+	; xor a ; ld a, 0
+	ldh [rSCY], a
+	ldh [rSCX], a
+	ld a, %11100100
+	ldh [rBGP], a
+	ldh [rOBP0], a
+	ld a, LCDCF_ON | LCDCF_BGON
+	ldh [rLCDC], a
 
-	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line"
-	db "\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
+	; Init interrupt handler vars
+	xor a
+	ldh [hVBlankFlag], a
+	dec a ; ld a, $FF
+	ldh [hHeldButtons], a
 
-	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20
-	db "\nIt could be useful for RPG cutscenes or rhythm games?<WAIT>"
+	ld hl, OAMDMA
+	lb bc, OAMDMA.end - OAMDMA, LOW(hOAMDMA)
+.copyOAMDMA
+	ld a, [hli]
+	ldh [c], a
+	inc c
+	dec b
+	jr nz, .copyOAMDMA
 
-	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!<WAIT>"
-	db "\nYou can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!<WAIT>"
-	db "\n"
-	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
+	; Init OAM
+	ld hl, wShadowOAM
+	ld de, .sprites
+	ld c, .spritesEnd - .sprites
+	rst MemcpySmall
+	; Send unused sprites off-screen
+	ld c, NB_UNUSED_SPRITES * sizeof_OAM_ATTRS
+	xor a ; ld a, 0
+	rst MemsetSmall
 
-PUSHS
-; Note that cross-bank "call" is NOT supported!
-; It is, after all, primarily intended for things like the player's name (which you'd store in RAM).
-SECTION "Called text", ROMX[$5000],BANK[3]
-CalledText:
-	db "Toto, I don't think we're in the main block anymore...<END>"
-POPS
 
-	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
-	; Control chars are also made available as exported `VWF_*` constants.
-	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
-	db "\".<WAIT>"
-	db "\nIt is intended for things like the player's name.<WAIT>"
-	db "\n"
-	db "\nA \"jump\" is also supported."
-	db "\nThough you may want to check out the source code--it's all seamless to the player.<WAIT>"
-	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
+	ld a, IEF_VBLANK
+	ldh [rIE], a
+	xor a
+	ei
+	ldh [rIF], a
 
-SECTION "Credits text", ROMX,BANK[3]
 
-CreditsText:
-	db "<CLEAR>♥ Credits ♥"
-	db "\nVWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.<WAIT>"
-	db "\n"
-	db "\nText will now end, press START to begin again.<END>"
+	assert .spritesEnd == .tiles
+	; ld de, .tiles
+	ld hl, vButtonTiles
+	ld bc, (.tilesEnd - .tiles) / 2
+	call LCDMemcpy
 
-SECTION "Static text", ROMX,BANK[2]
+	ld hl, vTextboxTopRow
+	lb bc, LOW(vBorderTiles.top / 16), NB_BORDER_TOP_TILES
+	assert NB_BORDER_TOP_TILES == TEXT_WIDTH_TILES + 1
+.writeTopRow
+	ldh a, [rSTAT]
+	and STATF_BUSY
+	jr nz, .writeTopRow
+	ld a, b
+	ld [hli], a
+	inc b
+	dec c
+	jr nz, .writeTopRow
 
-StaticText:
-	db "<SET_FONT>",0,"VWF engine 2.0.0"
-	db "\ngithub.com/ISSOtm/gb-vwf<END>"
+	ld hl, vText - 1
+	ld c, TEXT_HEIGHT_TILES
+	assert NB_BORDER_VERT_TILES == TEXT_HEIGHT_TILES * 2
+.writeVertBorders
+	ldh a, [rSTAT]
+	and STATF_BUSY
+	jr nz, .writeVertBorders
+	ld a, b
+	ld [hli], a
+	inc b
+	ld a, l
+	add a, TEXT_WIDTH_TILES
+	ld l, a
+	ld a, b
+	ld [hli], a
+	inc b
+	ld a, l
+	add a, SCRN_VX_B - TEXT_WIDTH_TILES - 2
+	ld l, a
+	adc a, h
+	sub l
+	ld h, a
+	dec c
+	jr nz, .writeVertBorders
+
+	inc hl
+	ld c, TEXT_WIDTH_TILES + 1
+	assert NB_BORDER_BOTTOM_TILES == TEXT_WIDTH_TILES + 1
+.writeBottomRow
+	ldh a, [rSTAT]
+	and STATF_BUSY
+	jr nz, .writeBottomRow
+	ld a, b
+	ld [hli], a
+	inc b
+	dec c
+	jr nz, .writeBottomRow
+
+	; Assuming OAM has correctly been written, start displaying sprites
+	ld a, LCDCF_ON | LCDCF_OBJON | LCDCF_OBJ16 | LCDCF_BGON
+	ldh [rLCDC], a
+
+
+	;;;;;;;;;;;;;;;; TEXT ENGINE GLOBAL INIT ;;;;;;;;;;;;;;;;;;;;
+
+	; You need to do the following at least once when the game starts.
+	xor a
+	ld [wNbPixelsDrawn], a
+
+
+	ld a, BANK(PerformAnimation)
+	ldh [hCurROMBank], a
+	ld [rROMB0], a
+	jp PerformAnimation
+
+
+.sprites
+	db 0, 142 + 8, LOW(vButtonTiles / 16) + 0, 0
+	db 0, 142 + 8, LOW(vButtonTiles / 16) + 2, 0
+	db 0, 150 + 8, LOW(vButtonTiles / 16) + 4, 0
+	db 0, 150 + 8, LOW(vButtonTiles / 16) + 6, 0
+.spritesEnd
+
+.tiles
+.buttonTiles
+INCBIN "res/button.2bpp"
+def NB_BUTTON_TILES equ (@ - .buttonTiles) / 16
+def NB_BUTTON_SPRITES equ NB_BUTTON_TILES / 2
+
+.borderTopTiles
+INCBIN "res/border_top.2bpp"
+def NB_BORDER_TOP_TILES equ (@ - .borderTopTiles) / 16
+.borderVertTiles
+INCBIN "res/border_vert.2bpp"
+def NB_BORDER_VERT_TILES equ (@ - .borderVertTiles) / 16
+.borderBottomTiles
+INCBIN "res/border_bottom.2bpp"
+def NB_BORDER_BOTTOM_TILES equ (@ - .borderBottomTiles) / 16
+
+.tilesEnd
+
+
+OAMDMA:
+	ldh [rDMA], a
+	ld a, OAM_COUNT
+.wait
+	dec a
+	jr nz, .wait
+	ret
+.end
 
 
 SECTION "LCDMemcpy", ROM0
