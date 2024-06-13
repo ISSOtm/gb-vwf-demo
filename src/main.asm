@@ -148,7 +148,7 @@ ENDR
 
 	;;;;;;;;;;;;;;;; TEXT ENGINE GLOBAL INIT ;;;;;;;;;;;;;;;;;;;;
 
-	; You need to write these on game startup
+	; You need to do the following at least once when the game starts.
 	xor a
 	ld [wNbPixelsDrawn], a
 
@@ -227,7 +227,8 @@ PerformAnimation:
 	ld [wTextbox.height], a
 	ld [wNbLinesRead], a
 	; Setup the print.
-	ld a, VWF_NEW_STR
+	assert VWF_NEW_STR == 0
+	xor a
 	ld hl, StaticText
 	ld b, BANK(StaticText)
 	call SetupVWFEngine
