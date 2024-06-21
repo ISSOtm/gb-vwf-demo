@@ -139,10 +139,6 @@ PerformAnimation:
 	ld [wCurTileID.max], a
 
 .restartText
-	ld a, VWF_NEW_STR
-	ld hl, Text
-	ld b, BANK(Text)
-	call SetupVWFEngine
 	ld a, LOW(vText)
 	ld [wTextbox.origin], a
 	ld [wPrinterHeadPtr], a
@@ -153,6 +149,10 @@ PerformAnimation:
 	ld [wTextbox.width], a
 	ld a, TEXT_HEIGHT_TILES
 	ld [wTextbox.height], a
+	ld a, VWF_NEW_STR
+	ld hl, Text
+	ld b, BANK(Text)
+	call SetupVWFEngine
 
 .loop
 	rst WaitVBlank
