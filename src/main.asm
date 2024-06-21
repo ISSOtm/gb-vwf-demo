@@ -161,6 +161,7 @@ PerformAnimation:
 	call PrintVWFChars
 
 	ld hl, wFlags
+	assert TEXTB_SYNC == 6
 	bit 6, [hl]
 	jr z, .noBeep
 	res 6, [hl]
