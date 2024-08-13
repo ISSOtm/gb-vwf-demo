@@ -3,7 +3,7 @@ set -euo pipefail
 
 INCPATHS=(src/)
 WARNINGS=(all  extra)
-ASFLAGS=(-p 0xFF  -h  "${INCPATHS[@]/#/-I}"  "${WARNINGS[@]/#/-W}")
+ASFLAGS=(-p 0xFF  "${INCPATHS[@]/#/-I}"  "${WARNINGS[@]/#/-W}")
 
 rgbasm=${RGBASM:-${RGBDS:+$RGBDS/}rgbasm}
 
