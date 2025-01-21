@@ -30,12 +30,6 @@ def NB_VARIANT_BITS equ 1 ; This demo only uses two variants (plain and bold) pe
 
 ; Macros required by `vwf.asm`.
 
-macro lb
-	assert (\2) < 256
-	assert (\3) < 256
-	ld \1, (\2) << 8 | (\3)
-endm
-
 macro get_cur_rom_bank_id
 	ldh a, [hCurROMBank]
 endm
