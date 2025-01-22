@@ -30,10 +30,6 @@ def NB_VARIANT_BITS equ 1 ; This demo only uses two variants (plain and bold) pe
 
 ; Macros required by `vwf.asm`.
 
-macro get_cur_rom_bank_id
-	ldh a, [hCurROMBank]
-endm
-
 macro switch_rom_bank
 	ldh [hCurROMBank], a ; For interrupt safety, the HRAM variable *must* be updated BEFORE the actual switch!
 	ld [rROMB0], a
