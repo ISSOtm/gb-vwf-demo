@@ -25,7 +25,7 @@ SECTION "VWF engine", ROM0
 def NB_VARIANT_BITS equ 1 ; This demo only uses two variants (plain and bold) per font family.
 
 ; Custom control characters.
-	control_char CLEAR, !ClearTextbox
+	control_char !,CLEAR, ClearTextbox
 
 
 ; Macros required by `vwf.asm`.
