@@ -1,2 +1,2 @@
 redo-ifchange "$2.vwf"
-mv "$1" "$3"
+mv "$1.tmp" "$3"
