@@ -78,7 +78,7 @@ CreditsText:
 SECTION "Static text", ROMX,BANK[2]
 
 StaticText:
-	db "<SET_FONT>",0,"VWF engine 2.0.0"
+	db "<SET_FONT>",0,"VWF engine 2.0.1"
 	db "\ngithub.com/ISSOtm/gb-vwf<END>"
 
 
