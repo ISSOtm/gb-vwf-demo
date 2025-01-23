@@ -24,6 +24,8 @@ SECTION "VWF engine", ROM0
 	font OPTIX,           res/fonts/optix.vwf
 	font OPTIX_BOLD,      res/fonts/optixBold.vwf
 def NB_VARIANT_BITS equ 1 ; This demo only uses two variants (plain and bold) per font family.
+	vwf_alias "<REGULAR>", VWF_SET_VARIANT, 0
+	vwf_alias "<BOLD>", VWF_SET_VARIANT, 1
 
 ; Custom control characters.
 	control_char !,CLEAR, ClearTextbox

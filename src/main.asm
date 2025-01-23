@@ -44,8 +44,8 @@ Text:
 	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20
 	db "\nIt could be useful for RPG cutscenes or rhythm games?<WAIT>"
 
-	db "<CLEAR>It's also possible to <SET_COLOR>",1,"change the color <SET_COLOR>",0,"of text!<WAIT>"
-	db "\nYou can also switch to <SET_VARIANT>",1,"variations of the font<SET_VARIANT>",0,", <SET_FONT>",OPTIX,"a different font, or <SET_VARIANT>",1,"a variation of a different font<SET_FONT>",BASE_SEVEN,", why not!<WAIT>"
+	db "<CLEAR>It's also possible to <COLOR1>change the color <COLOR3>of text!<WAIT>"
+	db "\nYou can also switch to <BOLD>variations of the font<REGULAR>, <FONT_OPTIX>a different font, or <BOLD>a variation of a different font<FONT_BASE_SEVEN>, why not!<WAIT>"
 	db "\n"
 	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
 
@@ -78,7 +78,7 @@ CreditsText:
 SECTION "Static text", ROMX,BANK[2]
 
 StaticText:
-	db "<SET_FONT>",0,"VWF engine 2.0.1"
+	db "<FONT_BASE_SEVEN>VWF engine 2.0.1"
 	db "\ngithub.com/ISSOtm/gb-vwf<END>"
 
 
