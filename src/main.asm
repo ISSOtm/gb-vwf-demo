@@ -47,7 +47,7 @@ Text:
 	db "<CLEAR>It's also possible to <COLOR1>change the color <COLOR3>of text!<WAIT>"
 	db "\nYou can also switch to <BOLD>variations of the font<REGULAR>, <FONT_OPTIX>a different font, or <BOLD>a variation of a different font<FONT_BASE_SEVEN>, why not!<WAIT>"
 	db "\n"
-	db "\nEach font can have up to 128 characters. The encoding is left up to you--make good use of RGBASM's `charmap` feature!<WAIT>"
+	db "\nEach font can have up to 128 characters. The encoding is entirely up to you, and easily specified via a single macro!<WAIT>"
 
 PUSHS
 ; Note that cross-bank "call" is NOT supported!
