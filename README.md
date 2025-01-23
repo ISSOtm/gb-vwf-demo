@@ -4,7 +4,7 @@ This is a project showcasing how to use gb-vwf within a larger project, as well 
 
 ## Building
 
-- [RGBDS](//rgbds.gbdev.io) 0.6.0 or later[^rgbds0.5].
+- [RGBDS](//rgbds.gbdev.io) 0.9.0 or later.
 - A POSIX environment with Bash (Linux and macOS qualify; on Windows, WSL or MSYS2 are required).
 
 Simply open a terminal in this directory, and run `./do`.
@@ -26,5 +26,3 @@ This demo's code and assets are dedicated to the public domain.
   <span property="dct:title">gb-vwf-demo</span> have been waived.
   This work is published from <span property="vcard:Country" datatype="dct:ISO3166" content="FR" about="https://eldred.fr">France</span>.
 </p>
-
-[^rgbds0.5]: 0.5.x also works if replacing `-I` with `-i`.

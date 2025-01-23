@@ -1,4 +1,5 @@
 INCLUDE "hardware.inc/hardware.inc"
+INCLUDE "debugfile.inc/debugfile.inc"
 
 
 ; Write a section definition to control where the VWF engine itself ends up;
