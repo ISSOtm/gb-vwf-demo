@@ -16,11 +16,12 @@ SECTION "VWF engine", ROM0
 	chars "`", "a",  "b", "c", "d", "e", "f", "g", "h", "i", "j",  "k",  "l",  "m", "n", "o"
 	chars "p", "q",  "r", "s", "t", "u", "v", "w", "x", "y", "z", "\{",  "|", "\}", "~", "△"
 	chars "¡", "¢",  "£", "€", "↑", "↓", "←", "→", "♡", "♥", "©",  "®",  "™",  "²", "√", "¿"
-	chars "Á", "Ä",  "Æ", "Ç", "É", "Í", "Ñ", "Ó", "Ö", "Ú", "Ü",                   "Þ", "µ"
-	chars "á", "ä",  "æ", "ç", "é", "í", "ñ", "ó", "ö", "ú", "ü",                   "þ", "ß"
+	chars "Á", "Ä",  "Æ", "Ç", "É", "Í", "Ñ", "Ó", "á", "ä", "æ",  "ç",  "é",  "í", "ñ", "ó"
 
 	font BASE_SEVEN,      res/fonts/BaseSeven.vwf
 	font BASE_SEVEN_BOLD, res/fonts/BaseSevenBold_vx8.vwf
+	; These two fonts don't define all characters defined in the charset above, which produces some warnings.
+	; This is intentional, it's intended to show what the warning looks like.
 	font OPTIX,           res/fonts/optix.vwf
 	font OPTIX_BOLD,      res/fonts/optixBold.vwf
 def NB_VARIANT_BITS equ 1 ; This demo only uses two variants (plain and bold) per font family.
