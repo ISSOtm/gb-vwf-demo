@@ -27,7 +27,7 @@ rm -rf "$3"
 
 while ! [[ -e "$3" ]]; do
 	# Attempt to build and discover dependencies, passing each of them to `redo-ifchange` via `-M`.
-	"$rgbasm" "${ASFLAGS[@]}" "$SRC" -o "$3" -M - -MG | cut -d : -f 2- | xargs redo-ifchange
+	"$rgbasm" "${ASFLAGS[@]}" -w "$SRC" -o "$3" -M - -MG | cut -d : -f 2- | xargs redo-ifchange
 	# We will keep retrying until all dependencies have been built, since then RGBASM will have generated the output file.
 done
 
