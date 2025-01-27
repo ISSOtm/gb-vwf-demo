@@ -42,10 +42,12 @@ You can witness that in action right now, given how long this paragraph is.<WAIT
 	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
 	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
 
-	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20,""" delays, manual line
+	; Note that if you have a common delay value, it might be convenient to alias it, even just locally as a one-off!
+	charmap "<DELAY20>", "<DELAY>",20
+	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"""possible to insert ma<DELAY20>nu<DELAY20>al<DELAY20> delays, manual line
 breaks, and, as you probably already noticed, manual button waits.<WAIT>"""
 
-	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20,"""
+	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1,""" are made to trigger sound effects.<DELAY20>
 It could be useful for RPG cutscenes or rhythm games?<WAIT>"""
 
 	db """<CLEAR>It's also possible to <COLOR1>change the color <COLOR3>of text!<WAIT>
@@ -61,7 +63,7 @@ CalledText:
 	db """Toto, I don't think we're in the main block anymore...<END>"""
 POPS
 
-	db """<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""""
+	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
 	; Control chars are also made available as exported `VWF_*` constants.
 	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
 	db """\".<WAIT>
