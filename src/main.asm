@@ -22,64 +22,68 @@ endm
 SECTION "Text", ROMX,BANK[3]
 
 Text:
-	db "<CLEAR>Hello World!"
-	db "\nThis line should break here, automatically!<WAIT>"
-	db "\n"
-	db "\nText resumes printing when pressing A, but holding B works too.<WAIT>"
+	; Multi-line strings are ideal for writing multi-line text, like so:
+	db """<CLEAR>Hello World!
+This line should break here, automatically!<WAIT>
 
-	db "<CLEAR>Let's tour through most of the functionality, shall we?<WAIT>"
-	db "\n"
-	db "\nThe engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically)."
-	db "\n"
-	db "\nIt also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!"
-	db "\nYou can witness that in action right now, given how long this paragraph is.<WAIT>"
+Text resumes printing when pressing A, but holding B works too.<WAIT>"""
 
+	; If you don't like the first line starting further right than the rest, you can use a line continuation:
+	db """\
+<CLEAR>Let's tour through most of the functionality, shall we?<WAIT>
+
+The engine is also aware of textbox height, and will replace newlines with commands to scroll the textbox (both manual ones, and those inserted automatically).
+
+It also keeps track of how many lines have been written since the last input, and automagically inserts a pause to avoid scrolling off lines you didn't have time to read!
+You can witness that in action right now, given how long this paragraph is.<WAIT>"""
+
+	; Or, if you'd rather stick to the old ways, you can also input the `\n`s manually, like this:
 	db "<CLEAR>Note that automatic hyphenation is not supported, but line breaking is hyphen-aware.<WAIT>"
 	; Notice how the first ZWS doesn't trigger a line break, but the second one does!
 	db "\nBreaking of long words can be hinted at using \"soft hyphens\". Isn't it totally a<ZWS>ma<ZWS>zing?<WAIT>"
 
-	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20," delays, manual line"
-	db "\nbreaks, and, as you probably already noticed, manual button waits.<WAIT>"
+	db "<CLEAR>It is, <DELAY>",5,"of course, <DELAY>",10,"possible to insert ma<DELAY>",20,"nu<DELAY>",20,"al<DELAY>",20,""" delays, manual line
+breaks, and, as you probably already noticed, manual button waits.<WAIT>"""
 
-	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20
-	db "\nIt could be useful for RPG cutscenes or rhythm games?<WAIT>"
+	db "<CLEAR>The engine also supports synchronisation! It's <SYNC>how <SYNC>these <SYNC>words<DELAY>",1," are made to trigger sound effects. <DELAY>",20,"""
+It could be useful for RPG cutscenes or rhythm games?<WAIT>"""
 
-	db "<CLEAR>It's also possible to <COLOR1>change the color <COLOR3>of text!<WAIT>"
-	db "\nYou can also switch to <BOLD>variations of the font<REGULAR>, <FONT_OPTIX>a different font, or <BOLD>a variation of a different font<FONT_BASE_SEVEN>, why not!<WAIT>"
-	db "\n"
-	db "\nEach font can have up to 128 characters. The encoding is entirely up to you, and easily specified via a single macro!<WAIT>"
+	db """<CLEAR>It's also possible to <COLOR1>change the color <COLOR3>of text!<WAIT>
+You can also switch to <BOLD>variations of the font<REGULAR>, <FONT_OPTIX>a different font, or <BOLD>a variation of a different font<FONT_BASE_SEVEN>, why not!<WAIT>
+
+Each font can have up to 128 characters. The encoding is entirely up to you, and easily specified via a single macro!<WAIT>"""
 
 PUSHS
 ; Note that cross-bank "call" is NOT supported!
 ; It is, after all, primarily intended for things like the player's name (which you'd store in RAM).
 SECTION "Called text", ROMX[$5000],BANK[3]
 CalledText:
-	db "Toto, I don't think we're in the main block anymore...<END>"
+	db """Toto, I don't think we're in the main block anymore...<END>"""
 POPS
 
-	db "<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""
+	db """<CLEAR>The engine also supports a `call`-like mechanism. The following quote is pulled from ${X:CalledText}: \""""
 	; Control chars are also made available as exported `VWF_*` constants.
 	db VWF_CALL, LOW(CalledText), HIGH(CalledText)
-	db "\".<WAIT>"
-	db "\nIt is intended for things like the player's name.<WAIT>"
-	db "\n"
-	db "\nA \"jump\" is also supported."
-	db "\nThough you may want to check out the source code--it's all seamless to the player.<WAIT>"
+	db """\".<WAIT>
+It is intended for things like the player's name.<WAIT>
+
+A \"jump\" is also supported.
+Though you may want to check out the source code--it's all seamless to the player.<WAIT>"""
 	db VWF_JUMP, LOW(CreditsText), HIGH(CreditsText)
 
 SECTION "Credits text", ROMX,BANK[3]
 
 CreditsText:
-	db "<CLEAR>♥ Credits ♥"
-	db "\nVWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.<WAIT>"
-	db "\n"
-	db "\nText will now end, press START to begin again.<END>"
+	db """<CLEAR>♥ Credits ♥
+VWF engine by ISSOtm; graphics by BlitterObject; fonts by PinoBatch & Optix, with edits by ISSOtm.<WAIT>
+
+Text will now end, press START to begin again.<END>"""
 
 SECTION "Static text", ROMX,BANK[2]
 
 StaticText:
-	db "<FONT_BASE_SEVEN>VWF engine 2.0.1"
-	db "\ngithub.com/ISSOtm/gb-vwf<END>"
+	db """<FONT_BASE_SEVEN>VWF engine 2.0.1
+github.com/ISSOtm/gb-vwf<END>"""
 
 
 ; This is intentionally placed in bank 2 to demonstrate the VWF engine working fine from ROMX
