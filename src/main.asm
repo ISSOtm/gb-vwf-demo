@@ -84,7 +84,7 @@ Text will now end, press START to begin again.<END>"""
 SECTION "Static text", ROMX,BANK[2]
 
 StaticText:
-	db """<FONT_BASE_SEVEN>VWF engine 2.0.1
+	db """<FONT_BASE_SEVEN>VWF engine 2.1.0
 github.com/ISSOtm/gb-vwf<END>"""
 
 
